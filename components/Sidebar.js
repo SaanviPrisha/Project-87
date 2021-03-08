@@ -12,7 +12,8 @@ export default class Sidebar extends React.Component {
     super()
     this.state = {
       image: '#',
-      userId: firebase.auth().currentUser.email
+      userId: firebase.auth().currentUser.email,
+      username: ''
     }
   }
   selectPicture = async () => {
@@ -46,6 +47,17 @@ export default class Sidebar extends React.Component {
       })
     })
   }
+  getUserDetails = () => {
+    db.collection("Users").where("email_id","==",this.state.userId).get()
+      .then((snapshot) => {
+        snapshot.forEach(doc => {
+          var data = doc.data()
+          this.setState({
+            username: data.first_name + " " + data.last_name,
+          })
+        });
+      })
+  }
   componentDidMount() {
     this.fetchImage(this.state.userId)
   }
@@ -63,6 +75,7 @@ export default class Sidebar extends React.Component {
               this.selectPicture()
             }}
           />
+         <Text style={styles.login}>{this.state.username}</Text>
         </View>
         <View style={styles.center}>
             <DrawerItems 
@@ -110,4 +123,10 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignSelf: 'center'
   },
+  login: {
+    fontSize: 15, 
+    fontWeight: 'bold',
+    alignSelf: 'center',
+    marginTop: 10
+  }
 });
